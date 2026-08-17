@@ -16,6 +16,7 @@ def test_regional_dawm_construction():
     assert out["TemporalDAWM"].tolist() == [2, 2]
     assert out["ParietalDAWM"].tolist() == [0, 1]
     assert out["OccipitalDAWM"].tolist() == [3, 3]
+    
 
 
 def test_only_regional_dawm_is_added():
@@ -26,3 +27,4 @@ def test_only_regional_dawm_is_added():
     })
     features = build_feature_sets(df)
     assert set(features["regional_dawm"]) - set(features["base"]) == set(REGIONAL_DAWM)
+    print(features)

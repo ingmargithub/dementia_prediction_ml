@@ -5,6 +5,7 @@ import pandas as pd
 from sklearn.model_selection import StratifiedKFold
 from sksurv.metrics import concordance_index_censored, concordance_index_ipcw
 
+# from internal project functions
 from .config import N_OUTER, RANDOM_STATE
 from .model import make_cox_pipeline, make_survival_target
 
@@ -15,11 +16,16 @@ def _folds(df: pd.DataFrame):
 
 
 def oof_predictions(df: pd.DataFrame, features: list[str]):
-    """Generate out-of-fold Cox relative-risk scores; no time horizon is used."""
+    """Generate out-of-fold Cox relative-risk scores"""
     X = df[features]
     y = make_survival_target(df)
+    print(f"X = {len(X)}, y = {len(y)}")
+    
+    # init
     oof_risk = np.full(len(df), np.nan)
     fold_results = []
+    
+    # loop over strat K folds
     for fold, (train_idx, test_idx) in enumerate(_folds(df), start=1):
         model = make_cox_pipeline(X.iloc[train_idx])
         model.fit(X.iloc[train_idx], y[train_idx])
@@ -35,7 +41,7 @@ def oof_predictions(df: pd.DataFrame, features: list[str]):
 
 
 def evaluate_oof(df: pd.DataFrame, oof_risk: np.ndarray) -> dict[str, float]:
-    """Evaluate survival discrimination over the observed follow-up."""
+    """Evaluate survival discrimination over total follow-up."""
     y = make_survival_target(df)
     return {
         "cindex": float(concordance_index_censored(y["event"], y["time"], oof_risk)[0]),

@@ -1,0 +1,9 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.venv/
+*.egg-info/
+results/*.csv
+src/dementia_prediction/config.py
+.DS_Store

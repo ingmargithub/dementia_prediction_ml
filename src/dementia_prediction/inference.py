@@ -36,11 +36,11 @@ def _partial_log_likelihood(model, X: pd.DataFrame, y) -> float:
         )
     return float(log_likelihood)
 
-
+# TO DO: the make_cox_pipeline does not work here
 def compare_final_models(df: pd.DataFrame, base_features: list[str], dawm_features: list[str]) -> CoxComparison:
     y = Surv.from_arrays(df["event"].to_numpy(bool), df["DEM_TIME_IN_DAYS"].to_numpy(float))
-    base_model = make_cox_pipeline(df[base_features])
-    dawm_model = make_cox_pipeline(df[dawm_features])
+    base_model = make_cox_pipeline(df)
+    dawm_model = make_cox_pipeline(df)
     base_model.fit(df[base_features], y)
     dawm_model.fit(df[dawm_features], y)
     ll_base = _partial_log_likelihood(base_model, df[base_features], y)

@@ -7,18 +7,20 @@ import pandas as pd
 PROJECT_ROOT = Path.cwd().resolve().parents[0]  # Adjust the parent index if needed
 sys.path.insert(0, str(PROJECT_ROOT / "src"))
 
+# TO DO: simplify this to __init__ maybe
 from dementia_prediction.config import INPUT_FILE, RESULTS_DIR, SHEET_NAME
 from dementia_prediction.evaluation import evaluate_models
 from dementia_prediction.features import build_feature_sets, prepare_dataframe
 from dementia_prediction.inference import compare_final_models
 from dementia_prediction.reporting import save_results
-from dementia_prediction.missingness import check_missingness, median_impute
+from dementia_prediction.missingness import check_missingness
+from dementia_prediction.diagnose_features import diagnose_features
 print("Project functions imported.")
 
 # --- RUN ANALYSIS --- #
 
 # read
-print("Read data file (memory issues sometimes)")
+print("Read data file (memory issues fixed with calamine engine!)")
 if not INPUT_FILE.exists():
     raise FileNotFoundError(f"Input data file not found: {INPUT_FILE}")
 raw = pd.read_excel(INPUT_FILE, sheet_name=SHEET_NAME, engine="calamine")
@@ -35,18 +37,18 @@ for name, features in feature_sets.items():
    
 # check for NaNs and Infs in df and deal with them
 missingness = check_missingness(df, feature_sets,)
-df = median_impute(df, feature_sets)
+#df = median_impute(df, feature_sets) # let the CV imputer do this
 
-# check if all missingness is resolved
-missingness = check_missingness(df, feature_sets,)
+# check if features are collinear etc
+diagnose_features(df, feature_sets)
 
 # evaluate models with feature sets
 print("\nCross-validated survival prediction")
 metrics, oof_predictions, fold_results = evaluate_models(df, feature_sets)
 print(metrics.round(4).to_string())
 
-# compare between the base model without DAWM and with regional DAWM ratings
-print("\nNested Cox-model comparison")
+# TO DO: fix comparison between base & base + regional DAWM ratings
+print("\n TO DO: Nested Cox-model comparison")
 comparison = compare_final_models(df, feature_sets["base"], feature_sets["regional_dawm"])
 print(f"Likelihood-ratio statistic: {comparison.likelihood_ratio:.4f}")
 print(f"Degrees of freedom: {comparison.degrees_of_freedom}")

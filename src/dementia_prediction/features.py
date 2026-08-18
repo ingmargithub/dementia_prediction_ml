@@ -4,10 +4,10 @@ import numpy as np
 import pandas as pd
 
 DEMOGRAPHICS = ["AGE", "SEX", "EDUCATION", "WEIGHT", "HEIGHT"] # if we add weight & height then BMI is not needed
-VASCULAR = ["HTN", "DM2", "CAD_01"] # removed afib/flutter features
+VASCULAR = ["HTN"] #, "DM2", "CAD_01"] # removed afib/flutter features
 LIFESTYLE = ["SMOKINGSTATUS", "SMOKING_YEARS", "ALCOHOLGWEEK"] # removed phys and smoking_ever
 SVD_MARKERS = ["MICROBLD", "SUBCORTYN", "VRSYN", "INFCORTYN", "INFCERYN"] #removed hematoma
-WMH_LOBAR = ["OccipitalP", "ParietalP", "TemporalP", "FrontalP"] # only use periventricular WMH..?
+WMH_LOBAR = ["BPP01WML_VOL"] #["OccipitalP", "ParietalP", "TemporalP", "FrontalP"] # only use periventricular WMH..?
 BASELINE_COGNITION = ["SA1MEMORY2", "SA1WORKING2", "SA1SPEED2"]
 REGIONAL_DAWM = ["FrontalDAWM", "ParietalDAWM", "OccipitalDAWM"] # removed "TemporalDAWM" for now because of very low count
 
@@ -85,10 +85,10 @@ def build_feature_sets(df: pd.DataFrame) -> dict[str, list[str]]:
         _available(columns, DEMOGRAPHICS)
         + _available(columns, VASCULAR)
         + _available(columns, LIFESTYLE)
-        + _available(columns, SVD_MARKERS)
-        + wmh
+        #+ _available(columns, SVD_MARKERS)
+        + wmh # log-transformed
         + _available(columns, ["baselineICV"])
-        + _available(columns, BASELINE_COGNITION)
+        #+ _available(columns, BASELINE_COGNITION)
     )
     base = list(dict.fromkeys(base))
     base = [
